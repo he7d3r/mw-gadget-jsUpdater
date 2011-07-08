@@ -1,10 +1,20 @@
 /**
- * jsUpdater for 1.17 migration tour
+ * jsUpdater for 1.17 migration tour ([[m:User talk:Krinkle/1-17-allwiki]])
  * Originally written by [[m:User:Helder.wiki]]
- * @revision: 1
- * @author:: Helder
+ * @revision: 2
+ * @author: Helder
  */
 window.jsUpdater = {};
+mw.messages.set( {
+	'jsupdater-single-quotes': 'single quotes',
+	'jsupdater-update-link': 'Update',
+	'jsupdater-update-link-description': 'Click here to scan this script for' +
+				' potential improvements for better compatibility with MW 1.17',
+	'jsupdater-migration-summary': '[[mw:RL/MGU|Migration]] to MW 1.17',
+	'jsupdater-new-code-description': 'The updated code is displayed below:',
+	'jsupdater-update-button': 'Update',
+	'jsupdater-select-updates': 'Which updates should be performed?'
+});
 if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamespaceNumber'), [8, 9, 2, 3, 4, 5]) !== -1) {
 	jsUpdater.updates = [
 		[
@@ -54,6 +64,14 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 			'$1mw.config.get( \'$2\' )',
 			'wg*mw.config.get(\'wg*\')'
 		], [
+			/mw\.config\.get\(\s*'([a-zA-Z_]*)'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*)\s*\|\|\s*mw\.config\.get\(\s*'\1'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*\s*\|\|\s*mw\.config\.get\(\s*'\1'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*))/g,
+			'$.inArray( mw.config.get(\'$1\'), [ $2, $3, $4 ]) !== -1',
+			'a==1||a==2$.inArray(a,[1,2])!==-1'
+		], [
+			/mw\.config\.get\(\s*'([a-zA-Z_]*)'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*)\s*\|\|\s*mw\.config\.get\(\s*'\1'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*)/g,
+			'$.inArray( mw.config.get(\'$1\'), [ $2, $3 ]) !== -1',
+			'a==1||a==2$.inArray(a,[1,2])!==-1'
+		], [
 			/document\.write\('<script type="text\/javascript" src="'\n?[\t\s]*\+[\t\s]*'(http[^\n]+?\.js'\n?[\t\s]*\+[\t\s]*'&action=raw&ctype=text\/javascript(?:&dontcountme=s)?(?:&smaxage=\d+)?(?:&maxage=\d+)?)"><\/script>'\)/g,
 			'mw.loader.load( \'$1\' )',
 			'document.write(\'<script...\')mw.loader.load'
@@ -61,7 +79,7 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 			// Use single quotes where possible. The [^=] is to avoid false positives in HTML tags such as '<a title="test" >'
 			/([^=])"([A-Za-z]+)"/g,
 			'$1\'$2\'',
-			'single quotes'
+			mw.msg( 'jsupdater-single-quotes' )
 		], */ [
 			/document\.getElementById\s*\(['"]\s*bodyContent\s*['"]\)\s*/g,
 			'mw.util.$content[0]',
@@ -71,11 +89,28 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 			'',
 			'-<pre>'
 		], [
-			/(?:\bjQuery|\$j?)(?:\(\s*document\s*\)\.ready)?\s*\(/g,
+			/typeof\s+([a-zA-Z_][0-9a-zA-Z_\.]*)\s*===?\s*(['"])function\2/g,
+			'$.isFunction($1)',
+			'typeof x == \'function\'$.isFunction(x)'
+		], [
+			/(?:(?:\bjQuery|\$j?)(?:\(\s*document\s*\)\.ready)|(?:\bjQuery|\$j))\s*\(/g,
 			'$(',
 			'$(...)'
 		]
 	];
+
+	jsUpdater.getUpdates = function (code, onlyFirst) {
+		var updates = [];
+		for (var i =0; i< jsUpdater.updates.length; i++ ) {
+			if (jsUpdater.updates[i][0].test(code)) {
+				updates.push( i );
+				if (onlyFirst) {
+					break;
+				}
+			}
+		}
+		return updates.join( '|' );
+	};
 
 	jsUpdater.checkForUpdates = function (res) {
 		var pages = res.query.pages,
@@ -89,17 +124,16 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 			pagetitle = pages[page].title;
 			break;
 		}
-
-		for (var i =0; i< jsUpdater.updates.length; i++ ) {
-			if (jsUpdater.updates[i][0].test(text)) {
-				update = true;
-				break;
-			}
-		}
-
-		if (update) {
+		update = jsUpdater.getUpdates(text, true /* only first update */);
+		if ( update.length ) {
 			url = mw.util.wikiGetlink(pagetitle) + '?action=edit&runjsupdater=true';
-			$(mw.util.addPortletLink('p-views', url, 'Update', 'ca-js-updater', 'Click here to scan this script for potential improvements for better compatibility with MW 1.17')).find('a').css('color', 'orange');
+			$(mw.util.addPortletLink(
+				'p-views',
+				url,
+				mw.msg( 'jsupdater-update-link' ),
+				'ca-js-updater',
+				mw.msg( 'jsupdater-update-link-description' )
+			)).find('a').css('color', 'orange');
 		}
 	};
 
@@ -107,38 +141,98 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 		var ns = mw.config.get('wgNamespaceNumber'),
 			page;
 		ns = (ns % 2 === 0) ? ns : ns - 1;
-		page = mw.config.get('wgFormattedNamespaces')[ns] + ':' + mw.util.wikiUrlencode(mw.config.get('wgTitle'));
-		mw.loader.load(mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/api.php?action=query&format=json&prop=revisions&titles=' + page + '&rvprop=content&callback=jsUpdater.checkForUpdates');
+		page = mw.config.get('wgFormattedNamespaces')[ns] + ':' +
+			mw.util.wikiUrlencode(mw.config.get('wgTitle'));
+		$.getJSON(
+			mw.util.wikiScript( 'api' ), {
+				'format': 'json',
+				'action': 'query',
+				'titles': page,
+				'prop': 'revisions',
+				'rvprop': 'content'
+			}, jsUpdater.checkForUpdates
+		);
 	};
 
 	$(jsUpdater.install);
 }
 if ($.inArray(mw.config.get('wgAction'), ['edit', 'submit']) !== -1) {
-	jsUpdater.run = function () {
-		var	newText,
-			oldText = $('#wpTextbox1').val(),
-			summary = '[[mw:RL/MGU|Migration]] to MW 1.17';
-		if (!jsUpdater.updates) {
+	jsUpdater.run = function ( list ) {
+		var	newText, oldText,
+			summary = mw.msg( 'jsupdater-migration-summary' );
+		if ( !jsUpdater.updates || !list.length ) {
 			return;
 		}
-		for (var i =0; i< jsUpdater.updates.length; i++) {
-			newText = oldText.replace(jsUpdater.updates[i][0], jsUpdater.updates[i][1]);
+		oldText = $('#wpTextbox1').val();
+		for (var i =0; i< list.length; i++) {
+			newText = oldText.replace(
+				jsUpdater.updates[ list[i] ][0], jsUpdater.updates[ list[i] ][1]
+			);
 			if ( oldText !== newText ) {
-				summary += '; ' + jsUpdater.updates[i][2];
+				summary += '; ' + jsUpdater.updates[ list[i] ][2];
 				oldText = newText;
 			}
 		}
 
-		if ( mw.util.$content.find('.permissions-errors').size() ) {
-			jsMsg('<b>The updated code is displayed below:</b><br/><textarea cols="80" rows="40" style="width: 100%; font-family: monospace; line-height: 1.5em;">' + mw.html.escape(newText) + '</textarea>');
+		if ( mw.util.$content.find('.permissions-errors').length ) {
+			jsMsg(
+				'<b>' + mw.msg( 'jsupdater-new-code-description' ) + '</b><br/><br/>' +
+				'<textarea cols="80" rows="40" style="width: 100%; font-family: monospace; line-height: 1.5em;">' +
+				mw.html.escape(newText) +
+				'</textarea>'
+			);
 		} else {
 			$('#wpTextbox1').val(newText);
 			$('#wpSummary').val(summary);
 			$('#wpDiff').click();
 		}
 	};
+	jsUpdater.showOptions = function () {
+		var	$msg, $updateInput, $updateLabel, $updateButton,
+			code = $('#wpTextbox1').val(),
+			updates = jsUpdater.getUpdates(code, false /* not only the first update */)
+				.split('|');
+		if (!jsUpdater.updates) {
+			return;
+		}
+		$msg = $( '<div/>', {
+			'id': 'js-updater-options',
+			'text': mw.msg( 'jsupdater-select-updates' )
+		} ).append('<br/>');
+		for (var i =0; i< updates.length; i++) {
+			// Based on [[mw:Snippets/Hide prefix in SpecialPrefixIndex]]
+			$updateInput = $( '<input/>', {
+				'type': 'checkbox',
+				'name': 'updates',
+				'id': 'update-' + updates[i],
+				'value': updates[i],
+				'checked': 'checked'
+			} );
+			$updateLabel = $( '<label/>', {
+				'for': 'update-' + updates[i],
+				'text': jsUpdater.updates[ updates[i] ][2]
+			} );
+			$msg.append($updateInput)
+				.append($updateLabel)
+				.append('<br/>');
+		}
+		$updateButton = $( '<button/>', {
+			'type': 'button',
+			'id': 'update-button',
+			'value': 'Update',
+			'text': mw.msg( 'jsupdater-update-button' )
+		} ).click(function () {
+			var list = [];
+			$( '#js-updater-options' )
+			.find( 'input:checkbox[name=updates]:checked' ).each(function(){
+				list.push( $(this).val() );
+			});
+			jsUpdater.run( list );
+		} ).appendTo( $msg );
+		jsMsg( $msg.get(0) );
+	};
 
 	if (!$.isEmpty(mw.util.getParamValue('runjsupdater'))) {
-		$(jsUpdater.run);
+		$(jsUpdater.showOptions);
 	}
 }
