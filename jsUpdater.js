@@ -1,8 +1,10 @@
 /**
- * jsUpdater for 1.17 migration tour ([[m:User talk:Krinkle/1-17-allwiki]])
- * Originally written by [[m:User:Helder.wiki]]
- * @revision: 2
- * @author: Helder
+ * jsUpdater
+ *
+ * Helper tool for implementing good practices and changes as found on:
+ * [[mw:RL/MGU]], [[mw:CC#JavaScript code]], [[mw:RL/JD]].
+ * @revision: 3
+ * @author: Helder, 2011 ([[m:User:Helder.wiki]])
  */
 window.jsUpdater = {};
 mw.messages.set( {
@@ -59,18 +61,22 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 			'$.escapeRE( $1 )',
 			'str.escapeRE()$.escapeRE(str)'
 		], [
+			/([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
+			'$.inArray( $1, [ $2, $3, $4, $5 ]) > -1',
+			'a==1||a==2$.inArray(a,[1,2])>-1'
+		], [
+			/([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
+			'$.inArray( $1, [ $2, $3, $4 ]) > -1',
+			'a==1||a==2$.inArray(a,[1,2])>-1'
+		], [
+			/([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
+			'$.inArray( $1, [ $2, $3 ]) > -1',
+			'a==1||a==2$.inArray(a,[1,2])>-1'
+		], [
 			// Use mw.config.get to access wg* global variables. The following list comes from [[mw:Manual:Interface/JavaScript]]
 			/([^'"<>$0-9A-Za-z_\/])(skin|stylepath|wgUrlProtocols|wgArticlePath|wgScriptPath|wgScriptExtension|wgScript|wgVariantArticlePath|wgActionPaths|wgServer|wgCanonicalNamespace|wgCanonicalSpecialPageName|wgNamespaceNumber|wgPageName|wgTitle|wgAction|wgArticleId|wgIsArticle|wgUserName|wgUserGroups|wgUserLanguage|wgContentLanguage|wgBreakFrames|wgCurRevisionId|wgVersion|wgEnableAPI|wgEnableWriteAPI|wgSeparatorTransformTable|wgDigitTransformTable|wgMainPageTitle|wgMainPageTitle|wgNamespaceIds|wgSiteName|wgCategories|wgRestrictionEdit|wgRestrictionMove|wgUserVariant|wgMWSuggestTemplate|wgDBname|wgSearchNamespaces|wgSearchNamespaces|wgMWSuggestMessages|wgAjaxWatch|wgLivepreviewMessageLoading|wgLivepreviewMessageReady|wgLivepreviewMessageFailed|wgLivepreviewMessageError|wgFileExtensions)\b/g,
 			'$1mw.config.get( \'$2\' )',
 			'wg*mw.config.get(\'wg*\')'
-		], [
-			/mw\.config\.get\(\s*'([a-zA-Z_]*)'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*)\s*\|\|\s*mw\.config\.get\(\s*'\1'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*\s*\|\|\s*mw\.config\.get\(\s*'\1'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*))/g,
-			'$.inArray( mw.config.get(\'$1\'), [ $2, $3, $4 ]) !== -1',
-			'a==1||a==2$.inArray(a,[1,2])!==-1'
-		], [
-			/mw\.config\.get\(\s*'([a-zA-Z_]*)'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*)\s*\|\|\s*mw\.config\.get\(\s*'\1'\s*\)\s*===?\s*([0-9a-zA-Z_'"]*)/g,
-			'$.inArray( mw.config.get(\'$1\'), [ $2, $3 ]) !== -1',
-			'a==1||a==2$.inArray(a,[1,2])!==-1'
 		], [
 			/document\.write\('<script type="text\/javascript" src="'\n?[\t\s]*\+[\t\s]*'(http[^\n]+?\.js'\n?[\t\s]*\+[\t\s]*'&action=raw&ctype=text\/javascript(?:&dontcountme=s)?(?:&smaxage=\d+)?(?:&maxage=\d+)?)"><\/script>'\)/g,
 			'mw.loader.load( \'$1\' )',
@@ -96,6 +102,10 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 			/(?:(?:\bjQuery|\$j?)(?:\(\s*document\s*\)\.ready)|(?:\bjQuery|\$j))\s*\(/g,
 			'$(',
 			'$(...)'
+		], [
+		/(\$[^;$]+)\.size\(\)/g,
+			'$1.length',
+			'.size()$length'
 		]
 	];
 
@@ -113,15 +123,16 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 	};
 
 	jsUpdater.checkForUpdates = function (res) {
-		var pages = res.query.pages,
-			page, pagetitle, text, url, update = false;
-
-		for (page in pages) {
-			if (!pages[page].pageid) {
+		var	pages = res.query.pages,
+			pageids = res.query.pageids,
+			i, pagetitle, text, url, update = false;
+ 
+		for (i = 0; i < pageids.length; i++) {
+			if (!pages[ pageids[i] ].pageid) {
 				continue;
 			}
-			text = pages[page].revisions[0]['*'];
-			pagetitle = pages[page].title;
+			text = pages[ pageids[i] ].revisions[0]['*'];
+			pagetitle = pages[ pageids[i] ].title;
 			break;
 		}
 		update = jsUpdater.getUpdates(text, true /* only first update */);
@@ -149,7 +160,8 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 				'action': 'query',
 				'titles': page,
 				'prop': 'revisions',
-				'rvprop': 'content'
+				'rvprop': 'content',
+				'indexpageids': '1'
 			}, jsUpdater.checkForUpdates
 		);
 	};
