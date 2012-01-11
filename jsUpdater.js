@@ -3,8 +3,9 @@
  *
  * Helper tool for implementing good practices and changes as found on:
  * [[mw:RL/MGU]], [[mw:CC#JavaScript code]], [[mw:RL/JD]].
- * @revision: 3
+ * @revision: 4
  * @author: Helder, 2011 ([[m:User:Helder.wiki]])
+ * @author: Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
  */
 window.jsUpdater = {};
 mw.messages.set( {
@@ -12,7 +13,7 @@ mw.messages.set( {
 	'jsupdater-update-link': 'Update',
 	'jsupdater-update-link-description': 'Click here to scan this script for' +
 				' potential improvements for better compatibility with MW 1.17',
-	'jsupdater-migration-summary': '[[mw:RL/MGU|Migration]] to MW 1.17',
+	'jsupdater-migration-summary': '[[mw:RL/MGU|← Migration]]: ',
 	'jsupdater-new-code-description': 'The updated code is displayed below:',
 	'jsupdater-update-button': 'Update',
 	'jsupdater-select-updates': 'Which updates should be performed?'
@@ -171,7 +172,8 @@ if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamesp
 if ($.inArray(mw.config.get('wgAction'), ['edit', 'submit']) !== -1) {
 	jsUpdater.run = function ( list ) {
 		var	newText, oldText,
-			summary = mw.msg( 'jsupdater-migration-summary' );
+			summary = mw.msg( 'jsupdater-migration-summary' ),
+			updatebits = [];
 		if ( !jsUpdater.updates || !list.length ) {
 			return;
 		}
@@ -181,10 +183,11 @@ if ($.inArray(mw.config.get('wgAction'), ['edit', 'submit']) !== -1) {
 				jsUpdater.updates[ list[i] ][0], jsUpdater.updates[ list[i] ][1]
 			);
 			if ( oldText !== newText ) {
-				summary += '; ' + jsUpdater.updates[ list[i] ][2];
+				updatebits.push( jsUpdater.updates[ list[i] ][2] );
 				oldText = newText;
 			}
 		}
+		summary += updatebits.join( ', ' );
 
 		if ( mw.util.$content.find('.permissions-errors').length ) {
 			jsMsg(
