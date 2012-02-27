@@ -3,9 +3,10 @@
  *
  * Helper tool for implementing good practices and changes as found on:
  * [[mw:RL/MGU]], [[mw:CC#JavaScript code]], [[mw:RL/JD]].
- * @revision: 4
- * @author: Helder, 2011 ([[m:User:Helder.wiki]])
+ * @revision: 5
+ * @author: Helder, 2011-2012 ([[m:User:Helder.wiki]])
  * @author: Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
+ * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/jsUpdater.js]] / [[File:User:Helder.wiki/Tools/jsUpdater.js]]
  */
 window.jsUpdater = {};
 mw.messages.set( {
