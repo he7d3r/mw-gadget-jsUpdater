@@ -3,7 +3,7 @@
  *
  * Helper tool for implementing good practices and changes as found on:
  * [[mw:RL/MGU]], [[mw:CC#JavaScript code]], [[mw:RL/JD]].
- * @revision: 7
+ * @revision: 8
  * @author: Helder, 2011-2012 ([[m:User:Helder.wiki]])
  * @author: Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
  * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/jsUpdater.js]] / [[File:User:Helder.wiki/Tools/jsUpdater.js]]
@@ -112,6 +112,14 @@
 			/(\$[^;$]+)\.size\(\)/g,
 			'$1.length',
 			'$obj.size() → $obj.length'
+		], [
+			/new\s+Array\(\s*\)/g,
+			'[]',
+			'new Array() → []'
+		], [
+			/new\s+Object\(\s*\)/g,
+			'{}',
+			'new Object() → {}'
 		]
 	];
 
