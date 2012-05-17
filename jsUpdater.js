@@ -3,7 +3,7 @@
  *
  * Helper tool for implementing good practices and changes as found on:
  * [[mw:RL/MGU]], [[mw:CC#JavaScript code]], [[mw:RL/JD]].
- * @revision: 6
+ * @revision: 7
  * @author: Helder, 2011-2012 ([[m:User:Helder.wiki]])
  * @author: Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
  * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/jsUpdater.js]] / [[File:User:Helder.wiki/Tools/jsUpdater.js]]
@@ -136,7 +136,8 @@
 			// pageids may be an empty array, in which case this will be undefined
 			pageid = res.query.pageids[0];
 
-		if (pageid && pages[pageid]) {
+		// pageid may be -1, in that case 'text' and 'revisions' will be undefined
+		if (pageid && Number(pageid) > 0 && pages[pageid]) {
 			pagetitle = pages[pageid].title;
 			text = pages[pageid].revisions[0]['*'];
 
@@ -152,6 +153,8 @@
 					: mw.msg('jsupdater-no-updates')
 			);
 			$(plink).find('a').css('color', updates.length ? 'orange' : 'green');
+		} else {
+			mw.log('API information for jsUpdater indicates this page does\'t exist.');
 		}
 	};
 
@@ -159,8 +162,7 @@
 		var ns = mw.config.get('wgNamespaceNumber'),
 			page;
 		ns = (ns % 2 === 0) ? ns : ns - 1;
-		page = mw.config.get('wgFormattedNamespaces')[ns] + ':' +
-			mw.util.wikiUrlencode(mw.config.get('wgTitle'));
+		page = mw.config.get('wgFormattedNamespaces')[ns] + ':' + mw.config.get('wgTitle');
 		$.getJSON(
 			mw.util.wikiScript('api'),
 			{
@@ -261,13 +263,18 @@
 	};
 
 	if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamespaceNumber'), [8, 9, 2, 3, 4, 5]) !== -1) {
-		$(jsUpdater.install);
+		mw.loader.using([
+			'mediawiki.util',
+			'jquery.mwExtension'
+		], function () {
+			$(jsUpdater.install);
 
-		if ($.inArray(mw.config.get('wgAction'), ['edit', 'submit']) !== -1) {
-			if (!$.isEmpty(mw.util.getParamValue('runjsupdater'))) {
-				$(jsUpdater.showOptions);
+			if ($.inArray(mw.config.get('wgAction'), ['edit', 'submit']) !== -1) {
+				if (!$.isEmpty(mw.util.getParamValue('runjsupdater'))) {
+					$(jsUpdater.showOptions);
+				}
 			}
-		}
+		});
 	}
 
 	window.jsUpdater = jsUpdater;
