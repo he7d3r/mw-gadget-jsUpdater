@@ -3,14 +3,14 @@
  *
  * Helper tool for implementing good practices and changes as found on:
  * [[mw:RL/MGU]], [[mw:CC#JavaScript code]], [[mw:RL/JD]].
- * @revision: 8
- * @author: Helder, 2011-2012 ([[m:User:Helder.wiki]])
- * @author: Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
+ * @version 9
+ * @author Helder, 2011-2012 ([[m:User:Helder.wiki]])
+ * @author Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
  * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/jsUpdater.js]] / [[File:User:Helder.wiki/Tools/jsUpdater.js]]
  */
 /*jslint browser: true, continue: true, plusplus: true, regexp: true*/
-/*global jQuery, mediaWiki, jsMsg */
-(function ($, mw, undefined) {
+/*global mediaWiki, jQuery */
+(function (mw, $, undefined) {
 	"use strict";
 
 	var jsUpdater = {};
@@ -28,114 +28,132 @@
 			' Perhaps this script has been updated already?'
 	});
 
-	jsUpdater.updates = [
-		[
-			/\bappendCSS\s*\(/g,
-			'mw.util.addCSS(',
-			'appendCSS → mw.util.addCSS'
-		], [
-			/\bimportScriptURI\s*\(/g,
-			'mw.loader.load(',
-			'importScriptURI → mw.loader.load'
-		], [
-			/\bimportStylesheetURI\s*\(\s*([^\n\)]+?)\s*\)/g,
-			'mw.loader.load($1, \'text/css\')',
-			'importStylesheetURI → mw.loader.load'
-		], [
-			/\baddOnloadHook\s*\(/g,
-			'$(',
-			'addOnloadHook → $'
-		], [
-			/([^.])getURLParamValue\s*\(/g,
-			'$1mw.util.getParamValue(',
-			'getURLParamValue → mw.util.getParamValue'
-		], [
-			/([^.])getParamVal\s*\(/g,
-			'$1mw.util.getParamValue(',
-			'getParamVal → mw.util.getParamValue'
-		], [
-			/([^.])getParamValue\s*\(/g,
-			'$1mw.util.getParamValue(',
-			'getParamValue → mw.util.getParamValue'
-		], [
-			/([^.])addPortletLink\s*\(/g,
-			'$1mw.util.addPortletLink(',
-			'addPortletLink → mw.util.addPortletLink'
-		], [
+	jsUpdater.patterns = {
+		appendCSS: {
+			regex: /\bappendCSS\s*\(/g,
+			replace: 'mw.util.addCSS(',
+			summary: 'appendCSS → mw.util.addCSS'
+		},
+		importScriptURI: {
+			regex: /\bimportScriptURI\s*\(/g,
+			replace: 'mw.loader.load(',
+			summary: 'importScriptURI → mw.loader.load'
+		},
+		importStylesheetURI: {
+			regex: /\bimportStylesheetURI\s*\(\s*([^\n\)]+?)\s*\)/g,
+			replace: 'mw.loader.load($1, \'text/css\')',
+			summary: 'importStylesheetURI → mw.loader.load'
+		},
+		addOnloadHook: {
+			regex: /\baddOnloadHook\s*\(/g,
+			replace: '$(',
+			summary: 'addOnloadHook → $'
+		},
+		getURLParamValue: {
+			regex: /([^.])getURLParamValue\s*\(/g,
+			replace: '$1mw.util.getParamValue(',
+			summary: 'getURLParamValue → mw.util.getParamValue'
+		},
+		getParamVal: {
+			regex: /([^.])getParamVal\s*\(/g,
+			replace: '$1mw.util.getParamValue(',
+			summary: 'getParamVal → mw.util.getParamValue'
+		},
+		getParamValue: {
+			regex: /([^.])getParamValue\s*\(/g,
+			replace: '$1mw.util.getParamValue(',
+			summary: 'getParamValue → mw.util.getParamValue'
+		},
+		addPortletLink: {
+			regex: /([^.])addPortletLink\s*\(/g,
+			replace: '$1mw.util.addPortletLink(',
+			summary: 'addPortletLink → mw.util.addPortletLink'
+		},
+		arrayProtoIndexOf: {
 			// IE < 9 doesn't support Array.indexOf()
-			/(wgUserGroups|wgRestrictionEdit|wgRestrictionMove|wgSearchNamespaces|wgMWSuggestMessages|wgFileExtensions)\.indexOf\s*\(\s*(.+?)\s*\)/g,
-			'$.inArray($2, $1)',
-			'arr.indexOf → $.inArray'
-		], [
-			/([a-zA-Z_][0-9a-zA-Z_]*)\.escapeRE\s*\(\s*\)/g,
-			'$.escapeRE($1)',
-			'str.escapeRE() → $.escapeRE(str)'
-		], [
-			/([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
-			'$.inArray($1, [$2, $3, $4, $5]) !== -1',
-			'a==1||a==2 → $.inArray(a,[1,2])'
-		], [
-			/([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
-			'$.inArray($1, [$2, $3, $4]) !== -1',
-			'a==1||a==2 → $.inArray(a,[1,2])'
-		], [
-			/([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
-			'$.inArray($1, [$2, $3]) !== -1',
-			'a==1||a==2 → $.inArray(a,[1,2])'
-		], [
+			regex: /(wgUserGroups|wgRestrictionEdit|wgRestrictionMove|wgSearchNamespaces|wgMWSuggestMessages|wgFileExtensions)\.indexOf\s*\(\s*(.+?)\s*\)/g,
+			replace: '$.inArray($2, $1)',
+			summary: 'arr.indexOf → $.inArray'
+		},
+		strProtoEscapeRE: {
+			regex: /([a-zA-Z_][0-9a-zA-Z_]*)\.escapeRE\s*\(\s*\)/g,
+			replace: '$.escapeRE($1)',
+			summary: 'str.escapeRE() → $.escapeRE(str)'
+		},
+		theOrOrOrOr: {
+			regex: /([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
+			replace: '$.inArray($1, [$2, $3, $4, $5]) !== -1',
+			summary: 'a==1||a==2 → $.inArray(a,[1,2])'
+		},
+		theOrOrOr: {
+			regex: /([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
+			replace: '$.inArray($1, [$2, $3, $4]) !== -1',
+			summary: 'a==1||a==2 → $.inArray(a,[1,2])'
+		},
+		theOrOr: {
+			regex: /([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
+			replace: '$.inArray($1, [$2, $3]) !== -1',
+			summary: 'a==1||a==2 → $.inArray(a,[1,2])'
+		},
+		wgVars: {
 			// Use mw.config.get to access wg* global variables. The following list comes from [[mw:Manual:Interface/JavaScript]]
-			/([^'"<>$0-9A-Za-z_\/])(skin|stylepath|wgUrlProtocols|wgArticlePath|wgScriptPath|wgScriptExtension|wgScript|wgVariantArticlePath|wgActionPaths|wgServer|wgCanonicalNamespace|wgCanonicalSpecialPageName|wgNamespaceNumber|wgPageName|wgTitle|wgAction|wgArticleId|wgIsArticle|wgUserName|wgUserGroups|wgUserLanguage|wgContentLanguage|wgBreakFrames|wgCurRevisionId|wgVersion|wgEnableAPI|wgEnableWriteAPI|wgSeparatorTransformTable|wgDigitTransformTable|wgMainPageTitle|wgMainPageTitle|wgNamespaceIds|wgSiteName|wgCategories|wgRestrictionEdit|wgRestrictionMove|wgUserVariant|wgMWSuggestTemplate|wgDBname|wgSearchNamespaces|wgSearchNamespaces|wgMWSuggestMessages|wgAjaxWatch|wgLivepreviewMessageLoading|wgLivepreviewMessageReady|wgLivepreviewMessageFailed|wgLivepreviewMessageError|wgFileExtensions)\b/g,
-			'$1mw.config.get(\'$2\')',
-			'wg* → mw.config.get(\'wg*\')'
-		], [
-			/document\.write\('<script type="text\/javascript" src="'\n?[\t\s]*\+[\t\s]*'(http[^\n]+?\.js'\n?[\t\s]*\+[\t\s]*'&action=raw&ctype=text\/javascript(?:&dontcountme=s)?(?:&smaxage=\d+)?(?:&maxage=\d+)?)"><\/script>'\)/g,
-			'mw.loader.load( \'$1\' )',
-			'document.write(\'<script...\') → mw.loader.load'
-		],
-		/*
-		[
+			regex: /([^'"<>$0-9A-Za-z_\/])(skin|stylepath|wgUrlProtocols|wgArticlePath|wgScriptPath|wgScriptExtension|wgScript|wgVariantArticlePath|wgActionPaths|wgServer|wgCanonicalNamespace|wgCanonicalSpecialPageName|wgNamespaceNumber|wgPageName|wgTitle|wgAction|wgArticleId|wgIsArticle|wgUserName|wgUserGroups|wgUserLanguage|wgContentLanguage|wgBreakFrames|wgCurRevisionId|wgVersion|wgEnableAPI|wgEnableWriteAPI|wgSeparatorTransformTable|wgDigitTransformTable|wgMainPageTitle|wgMainPageTitle|wgNamespaceIds|wgSiteName|wgCategories|wgRestrictionEdit|wgRestrictionMove|wgUserVariant|wgMWSuggestTemplate|wgDBname|wgSearchNamespaces|wgSearchNamespaces|wgMWSuggestMessages|wgAjaxWatch|wgLivepreviewMessageLoading|wgLivepreviewMessageReady|wgLivepreviewMessageFailed|wgLivepreviewMessageError|wgFileExtensions|wgFormattedNamespaces)\b/g,
+			replace: '$1mw.config.get(\'$2\')',
+			summary: 'wg* → mw.config.get(\'wg*\')'
+		},
+		documentWriteScript: {
+			regex: /document\.write\('<script type="text\/javascript" src="'\n?[\t\s]*\+[\t\s]*'(http[^\n]+?\.js'\n?[\t\s]*\+[\t\s]*'&action=raw&ctype=text\/javascript(?:&dontcountme=s)?(?:&smaxage=\d+)?(?:&maxage=\d+)?)"><\/script>'\)/g,
+			replace: 'mw.loader.load( \'$1\' )',
+			summary: 'document.write(\'<script...\') → mw.loader.load'
+		},
+		/* doubleQuotes: {
 			// Use single quotes where possible. The [^=] is to avoid false positives in HTML tags such as '<a title="test" >'
-			/([^=])"([A-Za-z]+)"/g,
-			'$1\'$2\'',
+			regex: /([^=])"([A-Za-z]+)"/g,
+			replace: '$1\'$2\'',
 			mw.msg('jsupdater-single-quotes' )
-		],
-		*/
-		[
-			/\/\/\s*(?:<\/?pre>\s*<\/?nowiki>|<\/?nowiki>\s*<\/?pre>|<\/?nowiki>|<\/?pre>)\s*\n/g,
-			'',
-			'-<pre>'
-		], [
-			/typeof\s+([a-zA-Z_][0-9a-zA-Z_\.]*)\s*===?\s*(['"])function\2/g,
-			'$.isFunction($1)',
-			'typeof x == \'function\' → $.isFunction(x)'
-		], [
-			/(\$[^;$]+)\.size\(\)/g,
-			'$1.length',
-			'$obj.size() → $obj.length'
-		], [
-			/new\s+Array\(\s*\)/g,
-			'[]',
-			'new Array() → []'
-		], [
-			/new\s+Object\(\s*\)/g,
-			'{}',
-			'new Object() → {}'
-		]
-	];
+		}, */
+		preNowiki: {
+			regex: /\/\/\s*(?:<\/?pre>\s*<\/?nowiki>|<\/?nowiki>\s*<\/?pre>|<\/?nowiki>|<\/?pre>)\s*\n/g,
+			replace: '',
+			summary: '-<pre>'
+		},
+		typeofFunction: {
+			regex: /typeof\s+([a-zA-Z_][0-9a-zA-Z_\.]*)\s*===?\s*(['"])function\2/g,
+			replace: '$.isFunction($1)',
+			summary: 'typeof x == \'function\' → $.isFunction(x)'
+		},
+		jqSize: {
+			regex: /([\$|jQuery][^;$]+)\.size\(\)/g,
+			replace: '$1.length',
+			summary: '$obj.size() → $obj.length'
+		},
+		newArray: {
+			regex: /new\s+Array\(\s*\)/g,
+			replace: '[]',
+			summary: 'new Array() → []'
+		},
+		newObject: {
+			regex: /new\s+Object\(\s*\)/g,
+			replace: '{}',
+			summary: 'new Object() → {}'
+		}
+	};
 
-	/** @return array: Array of keys to jsUpdater.updates */
-	jsUpdater.getUpdates = function (code, onlyFirst) {
-		var i,
-			updates = [];
-		for (i = 0; i < jsUpdater.updates.length; i++) {
-			if (jsUpdater.updates[i][0].test(code)) {
-				updates.push(i);
+	/** @return array: Array of keys to jsUpdater.patterns */
+	jsUpdater.getPatterns = function (code, onlyFirst) {
+		var patternIDs = [];
+		$.each(jsUpdater.patterns, function (id, pattern) {
+			// Set lastIndex back to 0 in case we've ran against
+			// the same string before (see also https://github.com/Krinkle/mw-gadgets-jsUpdater/issues/1)
+			pattern.regex.lastIndex = 0;
+			if (pattern.regex.test(code)) {
+				patternIDs.push(id);
 				if (onlyFirst) {
-					break;
+					return false;
 				}
 			}
-		}
-		return updates;
+		});
+		return patternIDs;
 	};
 
 	jsUpdater.checkForUpdates = function (res) {
@@ -149,7 +167,7 @@
 			pagetitle = pages[pageid].title;
 			text = pages[pageid].revisions[0]['*'];
 
-			updates = jsUpdater.getUpdates(text, /*onlyFirst=*/true);
+			updates = jsUpdater.getPatterns(text, /*onlyFirst=*/true);
 			url = mw.util.wikiGetlink(pagetitle) + '?action=edit&runjsupdater=true';
 			plink = mw.util.addPortletLink(
 				'p-views',
@@ -185,39 +203,54 @@
 		);
 	};
 
-	jsUpdater.run = function (list) {
-		var newText, oldText, i,
-			summary = mw.msg('jsupdater-migration-summary'),
-			updatebits = [];
+	/**
+	 * @param String input
+	 * @param Array patternIDs
+	 * @return Object keys 'output' (String) and 'summaries' (Array).
+	 */
+	jsUpdater.doConversion = function (input, patternIDs) {
+		var ret;
+		ret = {
+			output: input,
+			summaries: []
+		};
 
-		if (!jsUpdater.updates || !list.length) {
-			return;
+		if (!patternIDs.length) {
+			return ret;
 		}
+
+		$.each(patternIDs, function (i, patternID) {
+			var pattern = jsUpdater.patterns[patternID];
+			pattern.regex.lastIndex = 0;
+			ret.output = input.replace(pattern.regex, pattern.replace);
+			if (ret.output !== input) {
+				ret.summaries.push(pattern.summary);
+				input = ret.output;
+			}
+		});
+
+		return ret;
+	};
+
+	jsUpdater.run = function (patternIDs) {
+		var oldText, conversion,
+			summary = mw.msg('jsupdater-migration-summary');
 
 		oldText = $('#wpTextbox1').val();
 
-		for (i = 0; i < list.length; i++) {
-			newText = oldText.replace(
-				jsUpdater.updates[list[i]][0],
-				jsUpdater.updates[list[i]][1]
-			);
-			if (oldText !== newText) {
-				updatebits.push(jsUpdater.updates[list[i]][2]);
-				oldText = newText;
-			}
-		}
+		conversion = jsUpdater.doConversion(oldText, patternIDs);
 
-		summary += updatebits.join('; ');
+		summary += conversion.summaries.join('; ');
 
 		if (mw.util.$content.find('.permissions-errors').length) {
-			jsMsg(
+			mw.util.jsMessage(
 				'<b>' + mw.msg('jsupdater-new-code-description') + '</b><br><br>' +
 					'<textarea cols="80" rows="40" style="width: 100%; font-family: monospace; line-height: 1.5em;">' +
-					mw.html.escape(newText) +
+					mw.html.escape(conversion.output) +
 					'</textarea>'
 			);
 		} else {
-			$('#wpTextbox1').val(newText);
+			$('#wpTextbox1').val(conversion.output);
 			$('#wpSummary').val(summary);
 			$('#wpDiff').click();
 		}
@@ -226,7 +259,7 @@
 	jsUpdater.showOptions = function () {
 		var $msg, $updateInput, $updateLabel, $updateButton, i,
 			code = $('#wpTextbox1').val(),
-			updates = jsUpdater.getUpdates(code, /*onlyFist=*/false);
+			updates = jsUpdater.getPatterns(code, /*onlyFist=*/false);
 
 		$msg = $('<div id="js-updater-options"></div>');
 
@@ -246,7 +279,7 @@
 				});
 				$updateLabel = $('<label>', {
 					'for': 'update-' + updates[i],
-					text: jsUpdater.updates[updates[i]][2]
+					text: jsUpdater.patterns[updates[i]].summary
 				});
 				$msg.append('<br>', $updateInput, $updateLabel);
 			}
@@ -257,17 +290,17 @@
 				value: 'Update',
 				text: mw.msg('jsupdater-update-button')
 			}).click(function () {
-				var list = [];
+				var patternIDs = [];
 				$('#js-updater-options')
 					.find('input:checkbox[name="updates"]:checked')
 					.each(function () {
-						list.push($(this).val());
+						patternIDs.push($(this).val());
 					});
-				jsUpdater.run(list);
+				jsUpdater.run(patternIDs);
 			}).appendTo($msg);
 		}
 
-		jsMsg($msg.get(0));
+		mw.util.jsMessage($msg.get(0));
 	};
 
 	if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamespaceNumber'), [8, 9, 2, 3, 4, 5]) !== -1) {
@@ -287,4 +320,4 @@
 
 	window.jsUpdater = jsUpdater;
 
-}(jQuery, mediaWiki));
+}(mediaWiki, jQuery));
