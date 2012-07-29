@@ -112,6 +112,26 @@
 				comment: 'jQuery instead $',
 				input: 'jQuery(el).size();\n',
 				output: 'jQuery(el).length;\n'
+			}, {
+				pattern: ['old$j'],
+				comment: 'Old jquery alias (selecting elements)',
+				input: '$j ( "#test" );\n',
+				output: '$( "#test" );\n'
+			}, {
+				pattern: ['old$j'],
+				comment: 'Variable name containing the old jquery alias',
+				input: '$joo = $("#test");\n',
+				output: '$joo = $("#test");\n'
+			}, {
+				pattern: ['wgServerMissing'],
+				comment: 'Add wgServer to URLs to be loaded',
+				input: 'mw.loader.load( mw.config.get( \'wgScript\' ) + \'?title=Foo.js&action=raw&ctype=text/javascript\' );\n',
+				output: 'mw.loader.load( mw.config.get( \'wgServer\' ) + mw.config.get( \'wgScript\' ) + \'?title=Foo.js&action=raw&ctype=text/javascript\' );\n'
+			}, {
+				pattern: ['wgServerMissing'],
+				comment: 'Add wgServer to URLs in variables which will be loaded',
+				input: 'var url = mw.config.get(\'wgScript\') + \'?title=Foo.js&action=raw&ctype=text/javascript\';\nmw.loader.load(url);\n',
+				output: 'var url = mw.config.get( \'wgServer\' ) + mw.config.get(\'wgScript\') + \'?title=Foo.js&action=raw&ctype=text/javascript\';\nmw.loader.load(url);\n'
 			}
 		];
 

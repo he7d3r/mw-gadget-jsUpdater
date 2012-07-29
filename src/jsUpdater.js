@@ -106,6 +106,11 @@
 			replace: 'mw.loader.load( \'$1\' )',
 			summary: 'document.write(\'<script...\') → mw.loader.load'
 		},
+		wgServerMissing: {
+			regex: /(mw\.loader\.load\s*\(\s*)(mw\.config\.get\s*\(\s*(["'])wgScript\3\s*\)\s*\+\s*['"]\?)|(\s*var\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*)(mw\.config\.get\s*\(\s*(["'])wgScript\7\s*\)\s*\+\s*['"]\?)(?=(?:.|\n)+?mw\.loader\.load\s*\(\s*\5\s*\))/g,
+			replace: '$1$4mw.config.get( $3$7wgServer$3$7 ) + $2$6',
+			summary: '+wgServer ([[bugzilla:34036]])'
+		},
 		/* doubleQuotes: {
 			// Use single quotes where possible. The [^=] is to avoid false positives in HTML tags such as '<a title="test" >'
 			regex: /([^=])"([A-Za-z]+)"/g,
@@ -126,6 +131,11 @@
 			regex: /([\$|jQuery][^;$]+)\.size\(\)/g,
 			replace: '$1.length',
 			summary: '$obj.size() → $obj.length'
+		},
+		old$j: {
+			regex: /\$j\s*\(/g,
+			replace: '$(',
+			summary: '$j → $'
 		},
 		newArray: {
 			regex: /new\s+Array\(\s*\)/g,
