@@ -10,7 +10,7 @@
  */
 /*jslint browser: true, continue: true, plusplus: true, regexp: true*/
 /*global mediaWiki, jQuery */
-(function (mw, $, undefined) {
+(function (mw, $) {
 	"use strict";
 
 	var jsUpdater = {};
@@ -229,8 +229,8 @@
 			return ret;
 		}
 
-		$.each(patternIDs, function (i, patternID) {
-			var pattern = jsUpdater.patterns[patternID];
+		$.each(patternIDs, function (i) {
+			var pattern = jsUpdater.patterns[patternIDs[i]];
 			pattern.regex.lastIndex = 0;
 			ret.output = input.replace(pattern.regex, pattern.replace);
 			if (ret.output !== input) {
