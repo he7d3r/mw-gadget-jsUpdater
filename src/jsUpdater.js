@@ -3,15 +3,15 @@
  *
  * Helper tool for implementing good practices and changes as found on:
  * [[mw:RL/MGU]], [[mw:CC#JavaScript code]], [[mw:RL/JD]].
- * @version 9
+ * @version 10
  * @author Helder, 2011-2012 ([[m:User:Helder.wiki]])
  * @author Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
- * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/jsUpdater.js]] / [[File:User:Helder.wiki/Tools/jsUpdater.js]]
+ * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/jsUpdater.js]] ([[File:User:Helder.wiki/Tools/jsUpdater.js]])
  */
-/*jslint browser: true, continue: true, plusplus: true, regexp: true*/
-/*global mediaWiki, jQuery */
-(function (mw, $) {
-	"use strict";
+/*jshint browser: true, camelcase: true, curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, noempty: true, nonew: true, quotmark: true, undef: true, unused: true, strict: true, trailing: true, evil: true, onevar: true */
+/*global jQuery, mediaWiki */
+( function ( mw, $ ) {
+	'use strict';
 
 	var jsUpdater = {};
 
@@ -184,9 +184,9 @@
 				url,
 				mw.msg('jsupdater-update-link'),
 				'ca-js-updater',
-				updates.length
-					? mw.msg('jsupdater-update-link-description-some')
-					: mw.msg('jsupdater-no-updates')
+				updates.length ?
+					mw.msg('jsupdater-update-link-description-some') :
+					mw.msg('jsupdater-no-updates')
 			);
 			$(plink).find('a').css('color', updates.length ? 'orange' : 'green');
 		} else {
@@ -252,8 +252,9 @@
 
 		summary += conversion.summaries.join('; ');
 
+		$('#js-updater-options').remove();
 		if (mw.util.$content.find('.permissions-errors').length) {
-			mw.util.jsMessage(
+			$('#mw-content-text').prepend(
 				'<b>' + mw.msg('jsupdater-new-code-description') + '</b><br><br>' +
 					'<textarea cols="80" rows="40" style="width: 100%; font-family: monospace; line-height: 1.5em;">' +
 					mw.html.escape(conversion.output) +
@@ -310,7 +311,7 @@
 			}).appendTo($msg);
 		}
 
-		mw.util.jsMessage($msg.get(0));
+		$('#mw-content-text').prepend($msg.get(0));
 	};
 
 	if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamespaceNumber'), [8, 9, 2, 3, 4, 5]) !== -1) {
@@ -330,4 +331,4 @@
 
 	window.jsUpdater = jsUpdater;
 
-}(mediaWiki, jQuery));
+}( mediaWiki, jQuery ) );
