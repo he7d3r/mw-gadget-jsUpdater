@@ -178,7 +178,7 @@
 			text = pages[pageid].revisions[0]['*'];
 
 			updates = jsUpdater.getPatterns(text, /*onlyFirst=*/true);
-			url = mw.util.wikiGetlink(pagetitle, { action: 'edit', runjsupdater: 'true' });
+			url = mw.util.getUrl(pagetitle, { action: 'edit', runjsupdater: 'true' });
 			plink = mw.util.addPortletLink(
 				'p-views',
 				url,
