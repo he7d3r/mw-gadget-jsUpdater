@@ -146,6 +146,16 @@
 			regex: /new\s+Object\(\s*\)/g,
 			replace: '{}',
 			summary: 'new Object() → {}'
+		},
+		wikiGetlink: {
+			regex: /mw.util.wikiGetlink/g,
+			replace: 'mw.util.getUrl',
+			summary: 'wikiGetlink → getUrl'
+		},
+		hookEvent: {
+			regex: /hookEvent\s*\(\s*(["'])load\1\s*,/g,
+			replace: '$(',
+			summary: 'hookEvent → $'
 		}
 	};
 
