@@ -148,7 +148,7 @@
 			summary: 'new Object() → {}'
 		},
 		wikiGetlink: {
-			regex: /mw.util.wikiGetlink/g,
+			regex: /mw\.util\.wikiGetlink/g,
 			replace: 'mw.util.getUrl',
 			summary: 'wikiGetlink → getUrl'
 		},
@@ -156,6 +156,16 @@
 			regex: /hookEvent\s*\(\s*(["'])load\1\s*,/g,
 			replace: '$(',
 			summary: 'hookEvent → $'
+		},
+		mwUserName: {
+			regex: /mw\.user\.name\(\s*\)/g,
+			replace: 'mw.user.getName()',
+			summary: 'mw.user.name → mw.user.getName'
+		},
+		mwUserAnonymous: {
+			regex: /mw\.user\.anonymous\(\s*\)/g,
+			replace: 'mw.user.isAnon()',
+			summary: 'mw.user.anonymous → mw.user.isAnon'
 		}
 	};
 
