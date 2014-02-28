@@ -166,6 +166,21 @@
 			regex: /mw\.user\.anonymous\(\s*\)/g,
 			replace: 'mw.user.isAnon()',
 			summary: 'mw.user.anonymous → mw.user.isAnon'
+		},
+		tooltipAccessKeyPrefix: {
+			regex: /([^.])tooltipAccessKeyPrefix/g,
+			replace: '$1mw.util.tooltipAccessKeyPrefix',
+			summary: 'tooltipAccessKeyPrefix → mw.util.tooltipAccessKeyPrefix'
+		},
+		tooltipAccessKeyRegexp: {
+			regex: /([^.])tooltipAccessKeyRegexp/g,
+			replace: '$1mw.util.tooltipAccessKeyRegexp',
+			summary: 'tooltipAccessKeyRegexp → mw.util.tooltipAccessKeyRegexp'
+		},
+		updateTooltipAccessKeys: {
+			regex: /([^.])updateTooltipAccessKeys/g,
+			replace: '$1mw.util.updateTooltipAccessKeys',
+			summary: 'updateTooltipAccessKeys → mw.util.updateTooltipAccessKeys'
 		}
 	};
 
