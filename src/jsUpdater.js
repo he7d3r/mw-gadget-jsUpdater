@@ -157,6 +157,11 @@
 			replace: '$(',
 			summary: 'hookEvent → $'
 		},
+		addHandler: {
+			regex: /addHandler\s*\((.*?),\s*(["'])focus\2\s*,/g,
+			replace: '$($1).focus(',
+			summary: 'addHandler → $(...).focus'
+		},
 		mwUserName: {
 			regex: /mw\.user\.name\(\s*\)/g,
 			replace: 'mw.user.getName()',
