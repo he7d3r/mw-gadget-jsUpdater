@@ -283,10 +283,10 @@
 	};
 
 	jsUpdater.run = function (patternIDs) {
-		var oldText, conversion,
-			summary = mw.msg('jsupdater-migration-summary');
-
-		oldText = $('#wpTextbox1').val();
+		var conversion,
+			summary = mw.msg('jsupdater-migration-summary'),
+			ace = $(".ace_editor"),
+			oldText = ace.length ? ace[0].env.document.getValue() : $('#wpTextbox1').val();
 
 		conversion = jsUpdater.doConversion(oldText, patternIDs);
 
@@ -301,7 +301,11 @@
 					'</textarea>'
 			);
 		} else {
-			$('#wpTextbox1').val(conversion.output);
+			if (ace.length){
+				ace[0].env.document.setValue(conversion.output);
+			} else {
+				$('#wpTextbox1').val(conversion.output);
+			}
 			$('#wpSummary').val(summary);
 			$('#wpDiff').click();
 		}
@@ -309,7 +313,8 @@
 
 	jsUpdater.showOptions = function () {
 		var $msg, $updateInput, $updateLabel, $updateButton, i,
-			code = $('#wpTextbox1').val(),
+			ace = $(".ace_editor"),
+			code = ace.length ? ace[0].env.document.getValue() : $('#wpTextbox1').val(),
 			updates = jsUpdater.getPatterns(code, /*onlyFist=*/false);
 
 		$msg = $('<div id="js-updater-options"></div>');
