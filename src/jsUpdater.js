@@ -118,7 +118,7 @@
 			mw.msg('jsupdater-single-quotes' )
 		}, */
 		preNowiki: {
-			regex: /\/\/\s*(?:<\/?pre>\s*<\/?nowiki>|<\/?nowiki>\s*<\/?pre>|<\/?nowiki>|<\/?pre>)\s*\n/g,
+			regex: /\/\/\s*(?:<\/?pre>(?:\s*<\/?nowiki>)?|<\/?nowiki>\s*<\/?pre>|<\/?nowiki>)\s*\n/g,
 			replace: '',
 			summary: '-<pre>'
 		},
