@@ -71,7 +71,7 @@
 		},
 		arrayProtoIndexOf: {
 			// IE < 9 doesn't support Array.indexOf()
-			regex: /(wgUserGroups|wgRestrictionEdit|wgRestrictionMove|wgSearchNamespaces|wgMWSuggestMessages|wgFileExtensions)\.indexOf\s*\(\s*(.+?)\s*\)/g,
+			regex: /((?:mw\.config\.get\( *['"])?(?:wgUserGroups|wgRestrictionEdit|wgRestrictionMove|wgSearchNamespaces|wgMWSuggestMessages|wgFileExtensions)(?:['"] *\))?)\.indexOf\s*\(\s*(.+?)\s*\)/g,
 			replace: '$.inArray($2, $1)',
 			summary: 'arr.indexOf → $.inArray'
 		},
