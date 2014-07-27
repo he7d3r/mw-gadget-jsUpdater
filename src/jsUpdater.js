@@ -20,7 +20,7 @@
 		'jsupdater-update-link': 'Update',
 		'jsupdater-update-link-description-some': 'Click here to scan this script for' +
 			' potential improvements for better compatibility with MW 1.17+',
-		'jsupdater-migration-summary': '[[mw:RL/MGU|← Migration]]: ',
+		'jsupdater-migration-summary': '[[mw:RL/MGU|Migration]]: ',
 		'jsupdater-new-code-description': 'The updated code is displayed below:',
 		'jsupdater-update-button': 'Update',
 		'jsupdater-select-updates': 'Which updates should be performed?',
@@ -118,7 +118,7 @@
 			mw.msg('jsupdater-single-quotes' )
 		}, */
 		preNowiki: {
-			regex: /\/\/\s*(?:<\/?pre>(?:\s*<\/?nowiki>)?|<\/?nowiki>\s*<\/?pre>|<\/?nowiki>)\s*\n/g,
+			regex: /\/\/\s*(?:<\/?pre>(?:\s*<\/?nowiki>)?|<\/?nowiki>\s*<\/?pre>|<\/?pre>)\s*\n/g,
 			replace: '',
 			summary: '-<pre>'
 		},
