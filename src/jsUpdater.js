@@ -186,6 +186,16 @@
 			regex: /([^.])updateTooltipAccessKeys/g,
 			replace: '$1mw.util.updateTooltipAccessKeys',
 			summary: 'updateTooltipAccessKeys → mw.util.updateTooltipAccessKeys'
+		},
+		jsMessage: {
+			regex: /mw.util.jsMessage/g,
+			replace: 'mw.notify',
+			summary: 'mw.util.jsMessage → mw.notify'
+		},
+		jsMsg: {
+			regex: /jsMsg/g,
+			replace: 'mw.notify',
+			summary: 'jsMsg → mw.notify'
 		}
 	};
 
