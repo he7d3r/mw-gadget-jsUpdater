@@ -128,7 +128,7 @@
 			summary: 'typeof x == \'function\' → $.isFunction(x)'
 		},
 		jqSize: {
-			regex: /([\$|jQuery][^;$]+)\.size\(\)/g,
+			regex: /((?:\$|jQuery)[^;$]+)\.size\s*\(\)/g,
 			replace: '$1.length',
 			summary: '$obj.size() → $obj.length'
 		},
@@ -138,18 +138,18 @@
 			summary: '$j → $'
 		},
 		newArray: {
-			regex: /new\s+Array\(\s*\)/g,
+			regex: /new\s+Array\s*\(\s*\)/g,
 			replace: '[]',
 			summary: 'new Array() → []'
 		},
 		newObject: {
-			regex: /new\s+Object\(\s*\)/g,
+			regex: /new\s+Object\s*\(\s*\)/g,
 			replace: '{}',
 			summary: 'new Object() → {}'
 		},
 		wikiGetlink: {
-			regex: /mw\.util\.wikiGetlink/g,
-			replace: 'mw.util.getUrl',
+			regex: /mw\.util\.wikiGetlink\s*\(/g,
+			replace: 'mw.util.getUrl(',
 			summary: 'wikiGetlink → getUrl'
 		},
 		hookEvent: {
@@ -163,42 +163,42 @@
 			summary: 'addHandler → $(...).focus'
 		},
 		live: {
-			regex: /\$\((.*?)\)\.live\((.*?), *(.*?)\)/g,
+			regex: /\$\s*\(\s*(.*?)\s*\)\.live\s*\(\s*(.*?),\s*(.*?)\s*\)/g,
 			replace: '$(document).on($2,$1,$3)',
 			summary: 'live → $(document).on'
 		},
 		live2: {
-			regex: /\$\((.*?),([^\),]*?)\)\.live\((.*?),/g,
+			regex: /\$\s*\(\s*(.*?)\s*,\s*([^\),]*?)\s*\)\.live\(\s*(.*?)\s*,/g,
 			replace: '$($2).on($3,$1,',
 			summary: 'live → $(document).on'
 		},
 		mwUserName: {
-			regex: /mw\.user\.name\(\s*\)/g,
+			regex: /mw\.user\.name\s*\(\s*\)/g,
 			replace: 'mw.user.getName()',
 			summary: 'mw.user.name → mw.user.getName'
 		},
 		mwUserAnonymous: {
-			regex: /mw\.user\.anonymous\(\s*\)/g,
+			regex: /mw\.user\.anonymous\s*\(\s*\)/g,
 			replace: 'mw.user.isAnon()',
 			summary: 'mw.user.anonymous → mw.user.isAnon'
 		},
 		tooltipAccessKeyPrefix: {
-			regex: /([^.])tooltipAccessKeyPrefix/g,
-			replace: '$1mw.util.tooltipAccessKeyPrefix',
-			summary: 'tooltipAccessKeyPrefix → mw.util.tooltipAccessKeyPrefix'
+			regex: /(?:window\.|mw\.util\.)?tooltipAccessKeyPrefix/g,
+			replace: '/* FIXME: Use jquery.accessKeyLabel */',
+			summary: 'tooltipAccessKeyPrefix → jquery.accessKeyLabel'
 		},
 		tooltipAccessKeyRegexp: {
-			regex: /([^.])tooltipAccessKeyRegexp/g,
-			replace: '$1mw.util.tooltipAccessKeyRegexp',
-			summary: 'tooltipAccessKeyRegexp → mw.util.tooltipAccessKeyRegexp'
+			regex: /(?:window\.|mw\.util\.)?tooltipAccessKeyRegexp/g,
+			replace: '/* FIXME: Use jquery.accessKeyLabel */',
+			summary: 'tooltipAccessKeyPrefix → jquery.accessKeyLabel'
 		},
 		updateTooltipAccessKeys: {
-			regex: /([^.])updateTooltipAccessKeys/g,
+			regex: /([^.]|window\.)updateTooltipAccessKeys/g,
 			replace: '$1mw.util.updateTooltipAccessKeys',
 			summary: 'updateTooltipAccessKeys → mw.util.updateTooltipAccessKeys'
 		},
 		jsMessage: {
-			regex: /mw.util.jsMessage/g,
+			regex: /mw\.util\.jsMessage/g,
 			replace: 'mw.notify',
 			summary: 'mw.util.jsMessage → mw.notify'
 		},
@@ -233,15 +233,70 @@
 			summary: '$.quoteString → JSON.stringify'
 		},
 		browser: {
-			regex: /\$\.browser/g,
+			regex: /\$\.browser(.*)/g,
 			// TODO: Improve this
-			replace: '/* FIXME: $.client */$.browser',
+			replace: '$.browser$1 /* FIXME: Use $.client */',
 			summary: '$.browser → $.client'
 		},
 		andSelf: {
 			regex: /\.andSelf\(/g,
 			replace: '.addBack(',
 			summary: '.andSelf → .addBack'
+		},
+		getElementsByClassName: {
+			regex: /getElementsByClassName\s*\(\s*([^(),]+?)\s*,\s*([^(),]+?)\s*,\s*([^(),]+?)\s*\)/g,
+			replace: '$($3).find($2 + \'.\' + $1)',
+			summary: 'getElementsByClassName → $(\'.class\')'
+		},
+		getElementsByClassName2: {
+			regex: /getElementsByClassName\s*\(\s*([^(),]+?)\s*\)/g,
+			replace: '$(\'.\' + $1)',
+			summary: 'getElementsByClassName → $(\'.class\')'
+		},
+		mwEditButtons: {
+			regex: /mwEditButtons(.*)/g,
+			replace: '[]$1 /* FIXME: Use mw.toolbar */',
+			summary: '-mwEditButtons'
+		},
+		mwCustomEditButtons: {
+			regex: /mwCustomEditButtons(.*)/g,
+			replace: '[]$1 /* FIXME: Use mw.toolbar */',
+			summary: '-mwCustomEditButtons'
+		},
+		injectSpinner: {
+			regex: /(?:window\.)?injectSpinner\s*\(\s*(.*?)\s*,\s*(.*?)\s*\)/g,
+			replace: '$($1).injectSpinner($2)',
+			summary: 'injectSpinner → $(...).injectSpinner'
+		},
+		injectSpinner2: {
+			regex: /(?:window\.)?injectSpinner\s*\(\s*(.*?)\s*\)/g,
+			replace: '$($1).injectSpinner()',
+			summary: 'injectSpinner → $(...).injectSpinner'
+		},
+		removeSpinner: {
+			regex: /(?:window\.)?removeSpinner\s*\(\s*(.*?)\s*\)/g,
+			replace: '$.removeSpinner($1)',
+			summary: 'removeSpinner → $.removeSpinner'
+		},
+		escapeQuotesHTML: {
+			regex: /(?:window\.)?escapeQuotesHTML\s*\(/g,
+			replace: 'mw.html.escape(',
+			summary: 'escapeQuotesHTML → mw.html.escape'
+		},
+		escapeQuotes: {
+			regex: /(?:window\.)?escapeQuotes\s*\(/g,
+			replace: 'mw.html.escape(',
+			summary: 'escapeQuotes → mw.html.escape'
+		},
+		liveAndTestAtStart: {
+			regex: /(\.liveAndTestAtStart\s*\(.*)/g,
+			replace: '$1 /* FIXME: Use .on() and .each() directly */',
+			summary: 'liveAndTestAtStart → .on()/.each()'
+		},
+		otherDeprecations: {
+			regex: /((?:window\.)?(?:is_gecko|is_chrome_mac|is_chrome|webkit_version|is_safari_win|webkit_match|is_ff2|ff2_bugs|is_ff2_win|is_ff2_x11|opera95_bugs|opera7_bugs|opera6_bugs|is_opera_95|is_opera_preseven|is_opera|ie6_bugs|doneOnloadHook|onloadFuncts|runOnloadHook|changeText|killEvt|addClickHandler|removeHandler|getElementsByClassName|getInnerText|checkboxes|lastCheckbox|setupCheckboxShiftClick|addCheckboxClickHandlers|checkboxClickHandler|sajax_debug_mode|sajax_request_type|sajax_debug|sajax_init_object|sajax_do_call|wfSupportsAjax|addButton|insertTags|gM).*)/g,
+			replace: '$1 /* FIXME */',
+			summary: 'other deprecations'
 		}
 	};
 
