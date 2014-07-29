@@ -294,7 +294,7 @@
 			summary: 'liveAndTestAtStart → .on()/.each()'
 		},
 		otherDeprecations: {
-			regex: /((?:window\.|[^.])(?:is_gecko|is_chrome_mac|is_chrome|webkit_version|is_safari_win|webkit_match|is_ff2|ff2_bugs|is_ff2_win|is_ff2_x11|opera95_bugs|opera7_bugs|opera6_bugs|is_opera_95|is_opera_preseven|is_opera|ie6_bugs|doneOnloadHook|onloadFuncts|runOnloadHook|changeText|killEvt|addClickHandler|removeHandler|getElementsByClassName|getInnerText|checkboxes|lastCheckbox|setupCheckboxShiftClick|addCheckboxClickHandlers|checkboxClickHandler|sajax_debug_mode|sajax_request_type|sajax_debug|sajax_init_object|sajax_do_call|wfSupportsAjax|addButton|insertTags|gM).*)/g,
+			regex: /((?:window\.|[^.])(?:is_gecko|is_chrome_mac|is_chrome|webkit_version|is_safari_win|webkit_match|is_ff2|ff2_bugs|is_ff2_win|is_ff2_x11|opera95_bugs|opera7_bugs|opera6_bugs|is_opera_95|is_opera_preseven|is_opera|ie6_bugs|doneOnloadHook|onloadFuncts|runOnloadHook|changeText|killEvt|addClickHandler|removeHandler|getElementsByClassName|getInnerText|checkboxes|lastCheckbox|setupCheckboxShiftClick|addCheckboxClickHandlers|checkboxClickHandler|sajax_debug_mode|sajax_request_type|sajax_debug|sajax_init_object|sajax_do_call|wfSupportsAjax|addButton|insertTags|gM\s*\().*)/g,
 			replace: '$1 /* FIXME */',
 			summary: 'other deprecations'
 		}
