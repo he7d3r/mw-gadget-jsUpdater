@@ -264,17 +264,17 @@
 			summary: '-mwCustomEditButtons'
 		},
 		injectSpinner: {
-			regex: /(?:window\.)?injectSpinner\s*\(\s*(.*?)\s*,\s*(.*?)\s*\)/g,
+			regex: /(?:window\.|[^.])?injectSpinner\s*\(\s*(.*?)\s*,\s*(.*?)\s*\)/g,
 			replace: '$($1).injectSpinner($2)',
 			summary: 'injectSpinner → $(...).injectSpinner'
 		},
 		injectSpinner2: {
-			regex: /(?:window\.)?injectSpinner\s*\(\s*(.*?)\s*\)/g,
+			regex: /(?:window\.|[^.])?injectSpinner\s*\(\s*(.*?)\s*\)/g,
 			replace: '$($1).injectSpinner()',
 			summary: 'injectSpinner → $(...).injectSpinner'
 		},
 		removeSpinner: {
-			regex: /(?:window\.)?removeSpinner\s*\(\s*(.*?)\s*\)/g,
+			regex: /(?:window\.|[^.])?removeSpinner\s*\(\s*(.*?)\s*\)/g,
 			replace: '$.removeSpinner($1)',
 			summary: 'removeSpinner → $.removeSpinner'
 		},
