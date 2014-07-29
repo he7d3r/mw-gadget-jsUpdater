@@ -162,6 +162,16 @@
 			replace: '$($1).focus(',
 			summary: 'addHandler → $(...).focus'
 		},
+		live: {
+			regex: /\$\((.*?)\)\.live\((.*?), *(.*?)\)/g,
+			replace: '$(document).on($2,$1,$3)',
+			summary: 'live → $(document).on'
+		},
+		live2: {
+			regex: /\$\((.*?),([^\),]*?)\)\.live\((.*?),/g,
+			replace: '$($2).on($3,$1,',
+			summary: 'live → $(document).on'
+		},
 		mwUserName: {
 			regex: /mw\.user\.name\(\s*\)/g,
 			replace: 'mw.user.getName()',
@@ -196,6 +206,42 @@
 			regex: /jsMsg/g,
 			replace: 'mw.notify',
 			summary: 'jsMsg → mw.notify'
+		},
+		toJSON: {
+			regex: /\$\.toJSON/g,
+			replace: 'JSON.stringify',
+			summary: '$.toJSON → JSON.stringify'
+		},
+		parseJSON: {
+			regex: /\$\.parseJSON/g,
+			replace: 'JSON.parse',
+			summary: '$.parseJSON → JSON.parse'
+		},
+		evalJSON: {
+			regex: /\$\.evalJSON/g,
+			replace: 'JSON.parse',
+			summary: '$.evalJSON → JSON.parse'
+		},
+		secureEvalJSON: {
+			regex: /\$\.secureEvalJSON/g,
+			replace: 'JSON.parse',
+			summary: '$.secureEvalJSON → JSON.parse'
+		},
+		quoteString: {
+			regex: /\$\.quoteString/g,
+			replace: 'JSON.stringify',
+			summary: '$.quoteString → JSON.stringify'
+		},
+		browser: {
+			regex: /\$\.browser/g,
+			// TODO: Improve this
+			replace: '/* FIXME: $.client */$.browser',
+			summary: '$.browser → $.client'
+		},
+		andSelf: {
+			regex: /\.andSelf\(/g,
+			replace: '.addBack(',
+			summary: '.andSelf → .addBack'
 		}
 	};
 
@@ -295,7 +341,7 @@
 	jsUpdater.run = function (patternIDs) {
 		var conversion,
 			summary = mw.msg('jsupdater-migration-summary'),
-			ace = $(".ace_editor"),
+			ace = $('.ace_editor'),
 			oldText = ace.length ? ace[0].env.document.getValue() : $('#wpTextbox1').val();
 
 		conversion = jsUpdater.doConversion(oldText, patternIDs);
@@ -323,7 +369,7 @@
 
 	jsUpdater.showOptions = function () {
 		var $msg, $updateInput, $updateLabel, $updateButton, i,
-			ace = $(".ace_editor"),
+			ace = $('.ace_editor'),
 			code = ace.length ? ace[0].env.document.getValue() : $('#wpTextbox1').val(),
 			updates = jsUpdater.getPatterns(code, /*onlyFist=*/false);
 
