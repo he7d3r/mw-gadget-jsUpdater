@@ -249,6 +249,7 @@
 			summary: '.andSelf → .addBack'
 		},
 		// FIXME: var AllGeoboxes = ImageToggle.getElementsByClassName("geobox"); (from [[w:ar:MediaWiki:Common.js]])
+		// FIXME: getElementsByClassName(document.body, "div", "isATicker"); (from [[n:en:MediaWiki:Ticker2.js]])
 		getElementsByClassName: {
 			regex: /getElementsByClassName\s*\(\s*([^(),]+?)\s*,\s*([^(),]+?)\s*,\s*([^(),]+?)\s*\)/g,
 			replace: '$($3).find($2 + \'.\' + $1)',
