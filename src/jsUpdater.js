@@ -309,6 +309,11 @@
 			regex: /[?&]s?maxage=\d*/g,
 			replace: '',
 			summary: '-maxage ([[mw:Special:Diff/1068457]])'
+		},
+		dontcountme: {
+			regex: /[?&]dontcountme=s/g,
+			replace: '',
+			summary: '-dontcountme ([[w:en:Special:PermaLink/128295924#dontcountme=s?]])'
 		}
 	};
 
