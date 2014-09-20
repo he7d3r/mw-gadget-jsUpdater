@@ -6,7 +6,6 @@
  * @version 10
  * @author Helder, 2011-2012 ([[m:User:Helder.wiki]])
  * @author Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
- * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/jsUpdater.js]] ([[File:User:Helder.wiki/Tools/jsUpdater.js]])
  */
 /*jshint browser: true, camelcase: true, curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, noempty: true, nonew: true, quotmark: true, undef: true, unused: true, strict: true, trailing: true, evil: true, onevar: true */
 /*global jQuery, mediaWiki */
