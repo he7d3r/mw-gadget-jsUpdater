@@ -4,8 +4,9 @@
  * Helper tool for implementing good practices and changes as found on:
  * [[mw:RL/MGU]], [[mw:CC#JavaScript code]], [[mw:RL/JD]].
  * @version 10
- * @author Helder, 2011-2012 ([[m:User:Helder.wiki]])
+ * @author: Helder, 2011-2014 (https://github.com/he7d3r)
  * @author Timo Tijhof, 2011-2012 ([[m:User:Krinkle]])
+ * @license: CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0/>
  */
 /*jshint browser: true, camelcase: true, curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, noempty: true, nonew: true, quotmark: true, undef: true, unused: true, strict: true, trailing: true, evil: true, onevar: true */
 /*global jQuery, mediaWiki */
