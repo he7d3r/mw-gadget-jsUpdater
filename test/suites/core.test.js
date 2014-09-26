@@ -1,4 +1,3 @@
-/*global jsUpdater, jQuery, QUnit*/
 (function (jsUpdater, $, QUnit) {
 	"use strict";
 	QUnit.module('init');
