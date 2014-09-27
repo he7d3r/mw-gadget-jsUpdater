@@ -427,7 +427,7 @@
 					'</textarea>'
 			);
 		} else {
-			if (ace.length){
+			if (ace.length) {
 				ace[0].env.document.setValue(conversion.output);
 			} else {
 				$('#wpTextbox1').val(conversion.output);
