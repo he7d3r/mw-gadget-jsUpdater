@@ -136,8 +136,8 @@
 			summary: '$obj.size() → $obj.length'
 		},
 		old$j: {
-			regex: /\$j\s*\(/g,
-			replace: '$(',
+			regex: /\$j\s*(\(|\.)/g,
+			replace: '$$$1',
 			summary: '$j → $'
 		},
 		newArray: {

@@ -122,6 +122,11 @@
 				input: '$joo = $("#test");\n',
 				output: '$joo = $("#test");\n'
 			}, {
+				pattern: ['old$j'],
+				comment: 'Old jquery alias (calling a function)',
+				input: '$j.ajax ( { test: "" } );\n',
+				output: '$.ajax ( { test: "" } );\n'
+			}, {
 				pattern: ['wgServerMissing'],
 				comment: 'Add wgServer to URLs to be loaded',
 				input: 'mw.loader.load( mw.config.get( \'wgScript\' ) + \'?title=Foo.js&action=raw&ctype=text/javascript\' );\n',
