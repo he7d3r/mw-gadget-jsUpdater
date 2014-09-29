@@ -226,32 +226,32 @@
 				comment: 'Compare with string',
 				input: 'if( skin == "monobook" ) {',
 				output: 'if( mw.config.get(\'skin\') == "monobook" ) {'
-			}, /*{
+			}, {
 				pattern: ['documentWriteScript'],
 				comment: 'Upper case tag',
 				input: 'document.write(\'<SCRIPT SRC="http://example.com/gadget.js"><\/SCRIPT>\');',
-				output: 'mw.loader.load("http://example.com/gadget.js");'
-			},*/ {
-				pattern: ['documentWriteScript'],
+				output: 'mw.loader.load( \'http://example.com/gadget.js\' );'
+			}, {
+				pattern: ['documentWriteRawScript'],
 				comment: 'Three lines, concatenation and "dontcountme"',
 				input: 'document.write(\'<script type="text/javascript" src="\' \n    + \'http://en.wikipedia.org/w/index.php?title=User:Example/code.js\' \n    + \'&action=raw&ctype=text/javascript&dontcountme=s"></script>\');',
 				output: 'mw.loader.load( \'http://en.wikipedia.org/w/index.php?title=User:Example/code.js\' \n    + \'&action=raw&ctype=text/javascript&dontcountme=s\' );'
-			}, /*{
-				pattern: ['documentWriteScript'],
+			}, {
+				pattern: ['documentWriteRawScript'],
 				comment: 'Single line and "dontcountme"',
 				input: 'document.write(\'<script type="text/javascript" src="http://en.wikipedia.org/w/index.php?title=User:Example/vector.js&action=raw&ctype=text/javascript&dontcountme=s"><\/script>\');',
 				output: 'mw.loader.load( \'http://en.wikipedia.org/w/index.php?title=User:Example/vector.js&action=raw&ctype=text/javascript&dontcountme=s\' );'
-			}, */{
-				pattern: ['documentWriteScript'],
+			}, {
+				pattern: ['documentWriteRawScript'],
 				comment: 'Three lines, concatenation and "maxage"',
 				input: 'document.write(\'<script type="text/javascript" src="\' \n     + \'http://meta.wikimedia.org/w/index.php?title=MediaWiki:Wikiminiatlas.js\' \n     + \'&action=raw&ctype=text/javascript&smaxage=21600&maxage=86400"></script>\');',
 				output: 'mw.loader.load( \'http://meta.wikimedia.org/w/index.php?title=MediaWiki:Wikiminiatlas.js\' \n     + \'&action=raw&ctype=text/javascript&smaxage=21600&maxage=86400\' );'
-			}/*, {
-				pattern: ['documentWriteScript'],
+			}, {
+				pattern: ['documentWriteStylesheet'],
 				comment: 'Single line stylesheet',
 				input: 'document.write(\'<link rel="stylesheet" type="text/css" href="http://en.wikipedia.org/w/index.php?title=User:Foo/vector.css&action=raw&ctype=text/css&dontcountme=s"><\/link>\');',
 				output: 'mw.loader.load( \'http://en.wikipedia.org/w/index.php?title=User:Foo/vector.css&action=raw&ctype=text/css&dontcountme=s\', \'text/css\' );'
-			}*/
+			}
 		];
 
 		$.each(verifications, function (i, verify) {

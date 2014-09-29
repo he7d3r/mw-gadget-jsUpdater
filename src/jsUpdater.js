@@ -104,10 +104,20 @@
 			replace: '$1mw.config.get(\'skin\')',
 			summary: 'skin → mw.config.get(\'skin\')'
 		},
-		documentWriteScript: {
-			regex: /document\.write\('<script type="text\/javascript" src="'\n?[\t\s]*\+[\t\s]*'(http[^\n]+?\.js'\n?[\t\s]*\+[\t\s]*'&action=raw&ctype=text\/javascript(?:&dontcountme=s)?(?:&smaxage=\d+)?(?:&maxage=\d+)?)"><\/script>'\)/g,
+		documentWriteRawScript: {
+			regex: /document\.write\('<[Ss][Cc][Rr][Ii][Pp][Tt] (?:[Tt][Yy][Pp][Ee]="text\/javascript" )?[Ss][Rr][Cc]="(?:'\n?[\t\s]*\+[\t\s]*')?(http[^\n]+?\.js(?:'\n?[\t\s]*\+[\t\s]*')?&action=raw&ctype=text\/javascript(?:&dontcountme=s)?(?:&smaxage=\d+)?(?:&maxage=\d+)?)"><\/[Ss][Cc][Rr][Ii][Pp][Tt]>'\)/g,
 			replace: 'mw.loader.load( \'$1\' )',
 			summary: 'document.write(\'<script...\') → mw.loader.load'
+		},
+		documentWriteScript: {
+			regex: /document\.write\(["']<[Ss][Cc][Rr][Ii][Pp][Tt] (?:[Tt][Yy][Pp][Ee]="text\/javascript" )?[Ss][Rr][Cc]=["'](http.+?\.js)["']><\/[Ss][Cc][Rr][Ii][Pp][Tt]>["']\)/g,
+			replace: 'mw.loader.load( \'$1\' )',
+			summary: 'document.write(\'<script...\') → mw.loader.load'
+		},
+		documentWriteStylesheet: {
+			regex: /document\.write\(["']<[Ll][Ii][Nn][Kk] [Rr][Ee][Ll]="stylesheet" (?:[Tt][Yy][Pp][Ee]="text\/css" )?[Hh][Rr][Ee][Ff]=["'](http.+?)["']><\/[Ll][Ii][Nn][Kk]>["']\)/g,
+			replace: 'mw.loader.load( \'$1\', \'text/css\' )',
+			summary: 'document.write(\'<link...\') → mw.loader.load'
 		},
 		wgServerMissing: {
 			regex: /(mw\.loader\.load\s*\(\s*)(mw\.config\.get\s*\(\s*(["'])wgScript\3\s*\)\s*\+\s*['"]\?)|(\s*var\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*)(mw\.config\.get\s*\(\s*(["'])wgScript\7\s*\)\s*\+\s*['"]\?)(?=(?:.|\n)+?mw\.loader\.load\s*\(\s*\5\s*\))/g,
