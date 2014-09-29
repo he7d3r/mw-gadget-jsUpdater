@@ -136,7 +136,122 @@
 				comment: 'Add wgServer to URLs in variables which will be loaded',
 				input: 'var url = mw.config.get(\'wgScript\') + \'?title=Foo.js&action=raw&ctype=text/javascript\';\nmw.loader.load(url);\n',
 				output: 'var url = mw.config.get( \'wgServer\' ) + mw.config.get(\'wgScript\') + \'?title=Foo.js&action=raw&ctype=text/javascript\';\nmw.loader.load(url);\n'
-			}
+			}, {
+				pattern: ['appendCSS'],
+				comment: 'mw.util.addCSS',
+				input: 'appendCSS( \'#foo bar {display:none;}\' );\n',
+				output: 'mw.util.addCSS( \'#foo bar {display:none;}\' );\n'
+			}, {
+				pattern: ['importScriptURI'],
+				comment: 'Use mw.loader.load to load JavaScript',
+				input: 'importScriptURI(\'//test2.wikipedia.org/w/index.php?action=raw&ctype=text/javascript&title=MediaWiki:foo.js&maxage=0&smaxage=0\');\n',
+				output: 'mw.loader.load(\'//test2.wikipedia.org/w/index.php?action=raw&ctype=text/javascript&title=MediaWiki:foo.js&maxage=0&smaxage=0\');\n'
+			}, {
+				pattern: ['importStylesheetURI'],
+				comment: 'Use mw.loader.load to load CSS',
+				input: 'importStylesheetURI( \'//\' + lang + \'.wikipedia.org/w/index.php?title=User:Foo/bar.css&action=raw&ctype=text/css\' );\n',
+				output: 'mw.loader.load(\'//\' + lang + \'.wikipedia.org/w/index.php?title=User:Foo/bar.css&action=raw&ctype=text/css\', \'text/css\');\n'
+			}, {
+				pattern: ['addOnloadHook'],
+				comment: 'Function in a variable',
+				input: 'addOnloadHook( fooBar );',
+				output: '$( fooBar );'
+			}, {
+				pattern: ['addOnloadHook'],
+				comment: 'Anonymous function in multiple lines',
+				input: 'addOnloadHook(function() {\n// do something\n});',
+				output: '$(function() {\n// do something\n});'
+			}, {
+				pattern: ['getURLParamValue'],
+				comment: 'Equality test',
+				input: 'if (getURLParamValue("suppressredirect")!="1") return;',
+				output: 'if (mw.util.getParamValue("suppressredirect")!="1") return;'
+			}, {
+				pattern: ['getURLParamValue'],
+				comment: 'Save to variable',
+				input: 'var extraCSS = getURLParamValue(\'withCSS\');',
+				output: 'var extraCSS = mw.util.getParamValue(\'withCSS\');'
+			}, {
+				pattern: ['getParamVal'],
+				comment: 'Save to variable',
+				input: 'foo = getParamVal( "bar" );',
+				output: 'foo = mw.util.getParamValue( "bar" );'
+			}, {
+				pattern: ['getParamValue'],
+				comment: 'Boolean test',
+				input: 'if (getParamValue(\'minor\')) {\n\t//foo\n}',
+				output: 'if (mw.util.getParamValue(\'minor\')) {\n\t//foo\n}'
+			}, {
+				pattern: ['addPortletLink'],
+				comment: 'Inline',
+				input: '$(function() { addPortletLink(\'p-tb\', \'http://example.com/some_url\', \'Text\', \'Tooltip\');});',
+				output: '$(function() { mw.util.addPortletLink(\'p-tb\', \'http://example.com/some_url\', \'Text\', \'Tooltip\');});'
+			}, {
+				pattern: ['arrayProtoIndexOf'],
+				comment: 'String',
+				input: 'obj = {\n\tadmin: wgUserGroups.indexOf(\'sysop\') > -1 ? true : false\n};',
+				output: 'obj = {\n\tadmin: $.inArray(\'sysop\', wgUserGroups) > -1 ? true : false\n};'
+			}, {
+				pattern: ['arrayProtoIndexOf'],
+				comment: 'Variable',
+				input: 'mw.config.get( \'wgUserGroups\' ).indexOf( group ) !== -1',
+				output: '$.inArray(group, mw.config.get( \'wgUserGroups\' )) !== -1'
+			}, {
+				pattern: ['strProtoEscapeRE'],
+				comment: 'variable',
+				input: 'newString = oldString.escapeRE();',
+				output: 'newString = $.escapeRE(oldString);'
+			}, {
+				pattern: ['theOrOrOrOr'],
+				comment: 'A variable and four strings',
+				input: 'if (skin === "cologneblue" || skin === "modern" || skin === "monobook" || skin === "vector" ) {',
+				output: 'if ($.inArray(skin, ["cologneblue" , "modern" , "monobook" , "vector" ]) !== -1) {'
+			}, {
+				pattern: ['theOrOrOr'],
+				comment: 'A variable and three strings',
+				input: 'if( wgAction == \'view\' || wgAction == \'purge\' || wgAction == \'submit\' ){',
+				output: 'if( $.inArray(wgAction, [\'view\' , \'purge\' , \'submit\' ]) !== -1){'
+			}, {
+				pattern: ['theOrOr'],
+				comment: 'A variable and two strings',
+				input: 'if( wgAction == \'edit\' || wgAction == \'submit\' ){',
+				output: 'if( $.inArray(wgAction, [\'edit\' , \'submit\' ]) !== -1){'
+			}, {
+				pattern: ['wgVars'],
+				comment: 'Compare with string',
+				input: 'if (wgPageName == \'User:foo/bar\')',
+				output: 'if (mw.config.get(\'wgPageName\') == \'User:foo/bar\')'
+			}, {
+				pattern: ['skin'],
+				comment: 'Compare with string',
+				input: 'if( skin == "monobook" ) {',
+				output: 'if( mw.config.get(\'skin\') == "monobook" ) {'
+			}, /*{
+				pattern: ['documentWriteScript'],
+				comment: 'Upper case tag',
+				input: 'document.write(\'<SCRIPT SRC="http://example.com/gadget.js"><\/SCRIPT>\');',
+				output: 'mw.loader.load("http://example.com/gadget.js");'
+			},*/ {
+				pattern: ['documentWriteScript'],
+				comment: 'Three lines, concatenation and "dontcountme"',
+				input: 'document.write(\'<script type="text/javascript" src="\' \n    + \'http://en.wikipedia.org/w/index.php?title=User:Example/code.js\' \n    + \'&action=raw&ctype=text/javascript&dontcountme=s"></script>\');',
+				output: 'mw.loader.load( \'http://en.wikipedia.org/w/index.php?title=User:Example/code.js\' \n    + \'&action=raw&ctype=text/javascript&dontcountme=s\' );'
+			}, /*{
+				pattern: ['documentWriteScript'],
+				comment: 'Single line and "dontcountme"',
+				input: 'document.write(\'<script type="text/javascript" src="http://en.wikipedia.org/w/index.php?title=User:Example/vector.js&action=raw&ctype=text/javascript&dontcountme=s"><\/script>\');',
+				output: 'mw.loader.load( \'http://en.wikipedia.org/w/index.php?title=User:Example/vector.js&action=raw&ctype=text/javascript&dontcountme=s\' );'
+			}, */{
+				pattern: ['documentWriteScript'],
+				comment: 'Three lines, concatenation and "maxage"',
+				input: 'document.write(\'<script type="text/javascript" src="\' \n     + \'http://meta.wikimedia.org/w/index.php?title=MediaWiki:Wikiminiatlas.js\' \n     + \'&action=raw&ctype=text/javascript&smaxage=21600&maxage=86400"></script>\');',
+				output: 'mw.loader.load( \'http://meta.wikimedia.org/w/index.php?title=MediaWiki:Wikiminiatlas.js\' \n     + \'&action=raw&ctype=text/javascript&smaxage=21600&maxage=86400\' );'
+			}/*, {
+				pattern: ['documentWriteScript'],
+				comment: 'Single line stylesheet',
+				input: 'document.write(\'<link rel="stylesheet" type="text/css" href="http://en.wikipedia.org/w/index.php?title=User:Foo/vector.css&action=raw&ctype=text/css&dontcountme=s"><\/link>\');',
+				output: 'mw.loader.load( \'http://en.wikipedia.org/w/index.php?title=User:Foo/vector.css&action=raw&ctype=text/css&dontcountme=s\', \'text/css\' );'
+			}*/
 		];
 
 		$.each(verifications, function (i, verify) {
