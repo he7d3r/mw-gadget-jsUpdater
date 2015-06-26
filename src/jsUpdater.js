@@ -503,7 +503,7 @@
 			$(jsUpdater.install);
 
 			if ($.inArray(mw.config.get('wgAction'), ['edit', 'submit']) !== -1) {
-				if (!$.isEmpty(mw.util.getParamValue('runjsupdater'))) {
+				if (!mw.util.getParamValue('runjsupdater')) {
 					$(jsUpdater.showOptions);
 				}
 			}
