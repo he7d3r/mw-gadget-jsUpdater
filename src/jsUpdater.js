@@ -75,8 +75,8 @@
 		},
 		strProtoEscapeRE: {
 			regex: /([a-zA-Z_][0-9a-zA-Z_]*)\.escapeRE\s*\(\s*\)/g,
-			replace: '$.escapeRE($1)',
-			summary: 'str.escapeRE() → $.escapeRE(str)'
+			replace: 'mw.RegExp.escape($1)',
+			summary: 'str.escapeRE() → mw.RegExp.escape(str)'
 		},
 		theOrOrOrOr: {
 			regex: /([0-9a-zA-Z_\$\.]*|mw\.config\.get\(\s*'[a-zA-Z_]*'\s*\))\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*\|\|\s*\1\s*===?\s*([^\(\|\)&!]*)\s*/g,
@@ -322,7 +322,12 @@
 			regex: /[?&]dontcountme=s/g,
 			replace: '',
 			summary: '-dontcountme ([[w:en:Special:PermaLink/128295924#dontcountme=s?]])'
-		}
+		},
+		jqEscapeRE: {
+			regex: /(?:\$|jQuery)\.escapeRE\s*\(/g,
+			replace: 'mw.RegExp.escape(',
+			summary: '$.escapeRE → mw.RegExp.escape'
+		},
 	};
 
 	/** @return array: Array of keys to jsUpdater.patterns */

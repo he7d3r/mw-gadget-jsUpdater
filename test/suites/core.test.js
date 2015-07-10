@@ -251,6 +251,11 @@
 				comment: 'Single line stylesheet',
 				input: 'document.write(\'<link rel="stylesheet" type="text/css" href="http://en.wikipedia.org/w/index.php?title=User:Foo/vector.css&action=raw&ctype=text/css&dontcountme=s"><\/link>\');',
 				output: 'mw.loader.load( \'http://en.wikipedia.org/w/index.php?title=User:Foo/vector.css&action=raw&ctype=text/css&dontcountme=s\', \'text/css\' );'
+			}, {
+				pattern: ['jQueryEscapeRE'],
+				comment: 'Escaping a namespace name',
+				input: 'new RegExp( \'^\' + $.escapeRE( mw.util.getUrl( mw.config.get( \'wgFormattedNamespaces\' )[\'6\'] + \':\' ) ) )',
+				output: 'new RegExp( \'^\' + mw.RegExp.escape( mw.util.getUrl( mw.config.get( \'wgFormattedNamespaces\' )[\'6\'] + \':\' ) ) )'
 			}
 		];
 
