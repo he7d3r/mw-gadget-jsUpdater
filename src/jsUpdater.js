@@ -43,8 +43,8 @@
 			summary: 'importStylesheetURI → mw.loader.load'
 		},
 		addOnloadHook: {
-			regex: /\baddOnloadHook\s*\(/g,
-			replace: '$(',
+			regex: /((?!function ).{9})addOnloadHook\s*\(/g,
+			replace: '$1$(',
 			summary: 'addOnloadHook → $'
 		},
 		getURLParamValue: {
