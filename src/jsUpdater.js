@@ -43,7 +43,7 @@
 			summary: 'importStylesheetURI → mw.loader.load'
 		},
 		addOnloadHook: {
-			regex: /((?!function ).{9})addOnloadHook\s*\(/g,
+			regex: /^((?!.*function addOnloadHook\s*\().*)addOnloadHook\s*\(/g,
 			replace: '$1$(',
 			summary: 'addOnloadHook → $'
 		},
