@@ -3,15 +3,19 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Test Suite - jsUpdater</title>
-	<!-- Prerequisites --> 
-	<script src="//bits.wikimedia.org/meta.wikimedia.org/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=vector&amp;*"></script>
+	<!-- Prerequisites -->
+	<script src="https://meta.wikimedia.org/w/load.php?debug=false&amp;lang=en&amp;modules=jquery%2Cmediawiki&amp;only=scripts&amp;skin=vector"></script>
+	<script>
+	window.mwPerformance=(window.performance&&performance.mark)?performance:{mark:function(){}};
+	mw.config=new mw.Map(true);
+	</script>
 	<!-- Main library -->
 	<script src="../src/jsUpdater.js"></script>
 	<!-- Test framework -->
 	<link rel="stylesheet" href="qunit/qunit/qunit.css">
 	<script src="qunit/qunit/qunit.js"></script>
 	<!-- Test suites -->
-	<script src="suites/core.test.js?4"></script>
+	<script src="suites/core.test.js"></script>
 </head>
 <body>
 	<div id="qunit"></div>
