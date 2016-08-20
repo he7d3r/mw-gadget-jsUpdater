@@ -227,6 +227,16 @@
 				input: 'if( skin == "monobook" ) {',
 				output: 'if( mw.config.get(\'skin\') == "monobook" ) {'
 			}, {
+				pattern: ['bitsSkins'],
+				comment: 'Replace bits.wikimedia.org',
+				input: 'var x = "//bits.wikimedia.org/skins/Vector/images/watch-icon.png";',
+				output: 'var x = "/static/current/skins/Vector/images/watch-icon.png";'
+			}, {
+				pattern: ['bitsStaticCurrent'],
+				comment: 'Replace bits.wikimedia.org',
+				input: 'var x = "//bits.wikimedia.org/static-current/skins/MonoBook/bullet.gif";',
+				output: 'var x = "/static/current/skins/MonoBook/bullet.gif";'
+			}, {
 				pattern: ['documentWriteScript'],
 				comment: 'Upper case tag',
 				input: 'document.write(\'<SCRIPT SRC="http://example.com/gadget.js"><\/SCRIPT>\');',

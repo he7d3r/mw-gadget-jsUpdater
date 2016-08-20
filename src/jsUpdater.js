@@ -328,6 +328,17 @@
 			replace: 'mw.RegExp.escape(',
 			summary: '$.escapeRE → mw.RegExp.escape'
 		},
+		// bits.wikimedia.org is deprecated – https://phabricator.wikimedia.org/T107430
+		bitsSkins: {
+			regex: /(https?:)?\/\/bits\.wikimedia\.org\/skins\//g,
+			replace: '/static/current/skins/',
+			summary: 'bits.wikimedia.org → static'
+		},
+		bitsStaticCurrent: {
+			regex: /(https?:)?\/\/bits\.wikimedia\.org\/static-current\//g,
+			replace: '/static/current/',
+			summary: 'bits.wikimedia.org → static'
+		},
 	};
 
 	/** @return array: Array of keys to jsUpdater.patterns */
