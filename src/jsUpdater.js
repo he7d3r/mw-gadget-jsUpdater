@@ -512,10 +512,7 @@
 	};
 
 	if (/\.js$/g.test(mw.config.get('wgTitle')) && $.inArray(mw.config.get('wgNamespaceNumber'), [8, 9, 2, 3, 4, 5]) !== -1) {
-		mw.loader.using([
-			'mediawiki.util',
-			'jquery.mwExtension'
-		], function () {
+		mw.loader.using(['mediawiki.util']).then(function () {
 			$(jsUpdater.install);
 
 			if ($.inArray(mw.config.get('wgAction'), ['edit', 'submit']) !== -1) {
