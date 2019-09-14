@@ -200,7 +200,7 @@
 				pattern: ['strProtoEscapeRE'],
 				comment: 'variable',
 				input: 'newString = oldString.escapeRE();',
-				output: 'newString = mw.RegExp.escape(oldString);'
+				output: 'newString = mw.util.escapeRegExp(oldString);'
 			}, {
 				pattern: ['theOrOrOrOr'],
 				comment: 'A variable and four strings',
@@ -265,7 +265,7 @@
 				pattern: ['jqEscapeRE'],
 				comment: 'Escaping a namespace name',
 				input: 'new RegExp( \'^\' + $.escapeRE( mw.util.getUrl( mw.config.get( \'wgFormattedNamespaces\' )[\'6\'] + \':\' ) ) )',
-				output: 'new RegExp( \'^\' + mw.RegExp.escape( mw.util.getUrl( mw.config.get( \'wgFormattedNamespaces\' )[\'6\'] + \':\' ) ) )'
+				output: 'new RegExp( \'^\' + mw.util.escapeRegExp( mw.util.getUrl( mw.config.get( \'wgFormattedNamespaces\' )[\'6\'] + \':\' ) ) )'
 			}
 		];
 
