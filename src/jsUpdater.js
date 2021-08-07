@@ -140,10 +140,10 @@
 			replace: '',
 			summary: '-<pre>'
 		},
-		typeofFunction: {
-			regex: /typeof\s+([a-zA-Z_][0-9a-zA-Z_\.]*)\s*===?\s*(['"])function\2/g,
-			replace: '$.isFunction($1)',
-			summary: 'typeof x == \'function\' → $.isFunction(x)'
+		isFunction: {
+			regex: /\$\.isFunction\s*\((.+?)\)/g,
+			replace: 'typeof $1 === \'function\'',
+			summary: '$.isFunction(x) → typeof x === \'function\''
 		},
 		jqSize: {
 			regex: /((?:\$|jQuery)[^;$]+)\.size\s*\(\)/g,
